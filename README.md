@@ -26,7 +26,7 @@ To clone and run this application, you'll need [Git](https://git-scm.com) and [P
 
 ```bash
 # Clone this repository
-$ git clone https://git.cardiff.ac.uk/c22085374/group-project-iot.git
+$ git clone https://github.com/Tarrin376/PiVision.git
 
 # Go into the repository
 $ cd iot-project
