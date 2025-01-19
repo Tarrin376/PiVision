@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}"> 
+</head>
+<body>
+    <div class="wrapper">
+        <div class="text-div">
+            <h1>Your parsed text</h1>
+            <p id="parsedText"></p>
+            <button id="copyButton" class="button">
+                Copy
+            </button>
+        </div>
+        <div class="img-div">
+            <h1>Your image</h1>
+            <img id="image" 
+            src="{{ url_for('static', filename='image.jpg') }}" 
+            alt="Captured Image"
+            width="680"
+            height="420" />
+        </div>
+        <button id="refreshButton" class="button">
+            Refresh
+        </button>
+    </div>
+
+    <script>
+        // Function to copy text to clipboard
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+        }
+
+        // Function to render parsed text
+        function renderParsedText() {
+            const parsedTextElement = document.getElementById('parsedText');
+            // Create a new HTTP Request
+            const xhr = new XMLHttpRequest();
+            
+            // When the HTTP Request state changes, check if it is complete
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        const obj = JSON.parse(xhr.responseText);
+                        // Update parsed text
+                        parsedTextElement.textContent = obj["text"];
+                    } else {
+                        console.log("Failed to load JSON file:", xhr.status);
+                    }
+                }
+            }
+            
+            // Make a HTTP Request to get the text.json file in the 'static' directory
+            xhr.open("GET", "/static/text.json", true);
+            xhr.send();
+        }
+
+        // Function to render image
+        function renderImage() {
+            const image = document.getElementById('image');
+            const timestamp = new Date().getTime();
+            // Update image source to show new image
+            image.src = "{{ url_for('static', filename='image.jpg') }}" + "?" + timestamp;
+        }
+
+        // Event listener for copy button
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const parsedText = document.getElementById('parsedText').textContent;
+            copyText(parsedText);
+        });
+        
+        // Event listener for the refresh button
+        document.getElementById('refreshButton').addEventListener('click', function() {
+            renderParsedText();
+            renderImage();
+        });
+        
+        // On window load, show the current parsed text
+        window.onload = renderParsedText();
+    </script>
+</body>
+</html>
